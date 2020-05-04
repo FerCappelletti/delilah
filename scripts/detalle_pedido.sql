@@ -1,0 +1,15 @@
+CREATE TABLE detalle_pedido(
+id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+id_pedidos INT NOT NULL,
+id_plato INT NOT NULL,
+cantidad INT NOT NULL,
+precio_subtotal DECIMAL(9,2) NOT NULL
+);
+
+ALTER TABLE detalle_pedido
+ADD CONSTRAINT FK_DETALLE_PEDIDO_PEDIDOS
+FOREIGN KEY (id_pedidos) REFERENCES pedidos(id);
+
+ALTER TABLE detalle_pedido
+ADD CONSTRAINT FK_DETALLE_PEDIDO_PLATOS
+FOREIGN KEY (id_plato) REFERENCES platos(id);

@@ -1,0 +1,15 @@
+CREATE TABLE usuarios (
+id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+nombre_usuario VARCHAR(45) NOT NULL,
+apellido_usuario VARCHAR(45) NOT NULL,
+email VARCHAR(60) NOT NULL UNIQUE,
+usuario VARCHAR(45) NOT NULL UNIQUE,
+password VARCHAR(45) NOT NULL,
+telefono VARCHAR(45) NOT NULL,
+domicilio VARCHAR(100) NOT NULL,
+isAdmin BIT(1) NOT NULL
+);
+SELECT * FROM usuarios;
+
+ALTER TABLE usuarios 
+MODIFY password VARCHAR(100);

@@ -1,0 +1,8 @@
+CREATE TABLE platos (
+id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+nombre VARCHAR(60) NOT NULL,
+precio DECIMAL(9,2) NOT NULL,
+url_imagen VARCHAR(100),
+disponible BIT(1) NOT NULL
+);
+

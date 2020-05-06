@@ -1,7 +1,4 @@
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize(
-  "mysql://root:santino10@localhost:3306/delilahPrueba"
-);
+const db = require('../config/database');
 
 const createPedido = (req, res) => {};
 const deletePedido = (req, res) => {};

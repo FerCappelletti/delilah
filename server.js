@@ -3,6 +3,7 @@ const db = require('./config/database');
 const port = 3000;
 
 
+server.listen(port, () => {
 db.authenticate()
 .then(() => {
   console.log('Conectado')
@@ -11,5 +12,5 @@ db.authenticate()
   console.log('No se conectó')
 })
 
-server.listen(port, () => console.log('Server running on port: ' + port));
-
+console.log('Server running on port: ' + port);
+});

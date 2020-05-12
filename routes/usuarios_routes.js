@@ -1,6 +1,6 @@
 const express = require("express");
 const usuarioController = require('../controllers/usuario_controller')
-const middlewareUsuario = require('../middlewares/usuarios_middlewares');
+const middlewareUsuario = require('../middlewares/usuarios_middleware');
 const api = express.Router();
 
 api.post('/', middlewareUsuario.userDataOk, usuarioController.createUser);

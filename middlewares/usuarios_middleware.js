@@ -1,9 +1,5 @@
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const saltRounds = 10
-const db = require('../config/database.js')
 const firma =require('../config/data.json').firma;
-
 
 const userDataOk = async (req, res, next) => {
   let user = req.body;
@@ -37,13 +33,14 @@ const tokenisAdmin = (req, res, next) => {
 const tokenOk = (req,res, next) => {
   const token = req.headers.authorization.split(' ')[1];
   const usuario = jwt.verify(token, firma);
-  console.log(usuario)
   if (usuario) {
+      req.usuario = usuario;
       next();
   } else {
       res.status(401).send('Usuario no registrado o el token expiró');
   }
-}
+};
+
 module.exports = {
   userDataOk,
   tokenisAdmin,

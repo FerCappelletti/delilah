@@ -104,8 +104,7 @@ dist
 .tern-port
 
 
-config/
-data.json
+config/data.json
 
 
 

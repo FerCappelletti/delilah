@@ -23,7 +23,7 @@ const createUser = async (req, res) => {
     });
 };
 
-const getAllUsers = async (req, res) => {
+const getAllUsers = (req, res) => {
   db.query("SELECT * FROM usuarios")
     .then((usuarios) => {
       res.status(200).json(usuarios[0]);
@@ -33,10 +33,9 @@ const getAllUsers = async (req, res) => {
     });
 };
 
-const logIn = async (req, res) => {
+const logIn = (req, res) => {
   //usuario puede loguearse con usuario o email y password select where usuario || email && password
   let user = req.body;
-  console.log(user)
   db.query(
     'SELECT * FROM usuarios WHERE usuario = ? OR email = ?',
     { replacements: [user.usuario, user.email],

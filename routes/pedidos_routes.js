@@ -1,14 +1,13 @@
 const express = require("express");
-const middlewareUsuario = require('../middlewares/usuarios_middlewares');
-const platosController = require ('../controllers/platos_controller')
+const middlewareUsuario = require('../middlewares/usuarios_middleware');
 const pedidoController = require ('../controllers/pedido_controller')
-
+const middlewarePedido = require('../middlewares/pedidos_middleware')
 const api = express.Router();
 
-api.get('/', middlewareUsuario.tokenOk, platosController.getAllPlatos);
-api.post('/', middlewareUsuario.tokenOk, pedidoController.createPedido);
-api.put('/', middlewareUsuario.tokenisAdmin, pedidoController.upDatePedido);
-api.delete('/', middlewareUsuario.tokenisAdmin, pedidoController.deletePedido);
+api.get('/', middlewareUsuario.tokenisAdmin, pedidoController.getAllPedidos);
+api.post('/', middlewareUsuario.tokenOk, middlewarePedido.platosPedidos, pedidoController.postPedido);
+api.put('/', middlewareUsuario.tokenisAdmin, pedidoController.upDateEstadoPedido);
+//api.delete('/', middlewareUsuario.tokenisAdmin, pedidoController.);
 
 
 module.exports = api;

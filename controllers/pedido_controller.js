@@ -1,37 +1,27 @@
 const db = require("../config/database");
 const moment = require("moment");
-//calcular precio subtotal del detalle
+
 
 const postPedido = async (req, res) => {
     let usuario = req.usuario;
-    let hora = moment().format('YYYY-DD-MM HH:mm:ss');
+    let hora = moment().format('YYYY-MM-DD HH:mm:ss');
     let newPedido = req.body;
     let detalle = newPedido.detalle
-    
+
     db.query(
         "INSERT INTO pedidos (id_usuarios, id_forma_pago, hora) VALUES (?, ?, ?)",
         {
             replacements: [usuario.id, newPedido.id_forma_pago, hora]
-        }).then((respuesta) => {
+        }).then(async (respuesta) => {
             let idPedido = respuesta[0];
-            let total = 0;
-            detalle.forEach(async function (element) {
-                let precio = await getPrecioPlato(element.idPlato);
-                let precio_subtotal = precio.precio * element.cantidad;
-                total = total + precio_subtotal;
-
-                db.query('INSERT INTO detalle_pedido (id_pedidos, id_plato, cantidad, precio_subtotal) VALUES (?, ?, ?, ?)',
-                    {
-                        replacements: [idPedido, element.idPlato, element.cantidad, precio_subtotal]
-                    }).then((respuesta) => {
-                        console.log(total)
-                    }).catch((error) => {
-                        console.log('catch del foreach' + error)
-                    })
+            insertDetalle(detalle, idPedido)
+            .then((respuesta) => {
+                return upDateTotal(respuesta, idPedido)
+            }).catch((error) => {
+                console.log(error + ' error de promesas')
             })
-            /////
-     //total en pedidos = insert total sumando subtotal where id_pedidos = id_pedidos
-            res.status(200).send(' pedido insertado')
+
+            res.status(201).send('idPedido')
         }).catch((error) => {
             res.status(500).send('catch insert pedidos' + error)
         });
@@ -47,27 +37,68 @@ function getPrecioPlato(idPlato) {
                 }
             }).catch((error) => {
                 reject('plato no existe' + error)
-            })
+            });
     });
 }
 
+function insertDetalle (detalle, idPedido){
+    return new Promise(function(resolve, reject) {
+        let total = 0;
+        detalle.forEach(async function (element) {
+            let precio = await getPrecioPlato(element.idPlato);
+            let precio_subtotal = precio.precio * element.cantidad;
+            total = total + precio_subtotal;
+
+            db.query('INSERT INTO detalle_pedido (id_pedidos, id_plato, cantidad, precio_subtotal) VALUES (?, ?, ?, ?)',
+                {
+                    replacements: [idPedido, element.idPlato, element.cantidad, precio.precio * element.cantidad]
+                }).then((respuesta) => {
+                    console.log(total);
+                    resolve(total)
+                }).catch((error) => {
+                    console.log('catch del foreach' + error);
+                    reject(error+ 'catch del foreach')
+                });
+        });
+    });
+};
+
+function upDateTotal (total, idPedido){
+    db.query('UPDATE pedidos SET precio_total = ? WHERE id = ? ',
+                { replacements: [total, idPedido]})
+                .then((respuesta)=> {
+                    //console.log(respuesta[0])
+                }).catch((error) => {
+                    console.log(error + 'catch del update')
+                }).catch((error) => {
+                reject(error + ' calcular total')
+            });
+};
+
 const upDateEstadoPedido = (req, res) => {
-    //si es admin patch estado}
-    let estado = req.body.idEstado
+    //si es admin patch estado
+    let estadoNuevo = req.body.idEstado
+    let pedido = req.body.idPedido
 };
 const getAllPedidos = (req, res) => {
-    //JOIN si es admin};
+    //JOIN si es admin;
 };
-const getEstadoPedido = (req, res) => {
-    //JOIN pedido del usuario select pedidos where idusuario
+const getUsuarioPedido = (req, res) => {
+    //JOIN pedido del usuario select pedidos where idPedido
 };
-const platosFavoritos = (req, res) => { };
-const getPedidoByIdPedido = (req, res) => { };
+const deletePedidoUsuario = (req, res) => {
+    //patch cambiar estado pedido si idEstado < 3
+}
+const platosFavoritos = (req, res) => {
+    //
+};
+
 
 module.exports = {
     postPedido,
     upDateEstadoPedido,
     getAllPedidos,
-    getEstadoPedido,
-    //platosFavoritos
+    getUsuarioPedido,
+    platosFavoritos,
+    deletePedidoUsuario
 };

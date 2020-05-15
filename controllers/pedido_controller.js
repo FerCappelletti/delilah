@@ -1,104 +1,187 @@
 const db = require("../config/database");
 const moment = require("moment");
 
-
 const postPedido = async (req, res) => {
-    let usuario = req.usuario;
-    let hora = moment().format('YYYY-MM-DD HH:mm:ss');
-    let newPedido = req.body;
-    let detalle = newPedido.detalle
+  let usuario = req.usuario;
+  let hora = moment().format("YYYY-MM-DD HH:mm:ss");
+  let newPedido = req.body;
+  let detalle = newPedido.detalle;
 
-    db.query(
-        "INSERT INTO pedidos (id_usuarios, id_forma_pago, hora) VALUES (?, ?, ?)",
-        {
-            replacements: [usuario.id, newPedido.id_forma_pago, hora]
-        }).then(async (respuesta) => {
-            let idPedido = respuesta[0];
-            insertDetalle(detalle, idPedido)
-            .then((respuesta) => {
-                return upDateTotal(respuesta, idPedido)
-            }).catch((error) => {
-                console.log(error + ' error de promesas')
-            })
-
-            res.status(201).send('idPedido')
-        }).catch((error) => {
-            res.status(500).send('catch insert pedidos' + error)
+  db.query(
+    "INSERT INTO pedidos (id_usuarios, id_forma_pago, hora) VALUES (?, ?, ?)",
+    {
+      replacements: [usuario.id, newPedido.id_forma_pago, hora],
+    }
+  )
+    .then(async (respuesta) => {
+      let idPedido = respuesta[0];
+      insertDetalle(detalle, idPedido)
+        .then((respuesta) => {
+          return upDateTotal(respuesta, idPedido);
+        })
+        .catch((error) => {
+          console.log(error + " error de promesas");
         });
-}
+
+      res.status(201).json({idPedido: idPedido});
+    })
+    .catch((error) => {
+      res.status(500).send("catch insert pedidos" + error);
+    });
+};
 
 function getPrecioPlato(idPlato) {
-    return new Promise(function (resolve, reject) {
-        db.query('SELECT precio FROM platos WHERE id = ?',
-            { replacements: [idPlato], type: db.QueryTypes.SELECT })
-            .then((respuesta) => {
-                if (respuesta.length !== 0) {
-                    resolve(respuesta[0]);
-                }
-            }).catch((error) => {
-                reject('plato no existe' + error)
-            });
-    });
-}
+  return new Promise(function (resolve, reject) {
+    db.query("SELECT precio FROM platos WHERE id = ?", {
+      replacements: [idPlato],
+      type: db.QueryTypes.SELECT,
+    })
+      .then((respuesta) => {
+        if (respuesta.length !== 0) {
+          resolve(respuesta[0]);
+        }
+      })
+      .catch((error) => {
+        reject("plato no existe" + error);
+      });
+  });
+};
 
-function insertDetalle (detalle, idPedido){
-    return new Promise(function(resolve, reject) {
-        let total = 0;
-        detalle.forEach(async function (element) {
-            let precio = await getPrecioPlato(element.idPlato);
-            let precio_subtotal = precio.precio * element.cantidad;
-            total = total + precio_subtotal;
+function insertDetalle(detalle, idPedido) {
+  return new Promise(function (resolve, reject) {
+    let total = 0;
+    detalle.forEach(async function (element) {
+      let precio = await getPrecioPlato(element.idPlato);
+      let precio_subtotal = precio.precio * element.cantidad;
+      total = total + precio_subtotal;
 
-            db.query('INSERT INTO detalle_pedido (id_pedidos, id_plato, cantidad, precio_subtotal) VALUES (?, ?, ?, ?)',
-                {
-                    replacements: [idPedido, element.idPlato, element.cantidad, precio.precio * element.cantidad]
-                }).then((respuesta) => {
-                    console.log(total);
-                    resolve(total)
-                }).catch((error) => {
-                    console.log('catch del foreach' + error);
-                    reject(error+ 'catch del foreach')
-                });
+      db.query(
+        "INSERT INTO detalle_pedido (id_pedidos, id_plato, cantidad, precio_subtotal) VALUES (?, ?, ?, ?)",
+        {
+          replacements: [
+            idPedido,
+            element.idPlato,
+            element.cantidad,
+            precio.precio * element.cantidad,
+          ],
+        }
+      )
+        .then((respuesta) => {
+          console.log(total);
+          resolve(total);
+        })
+        .catch((error) => {
+          console.log("catch del foreach" + error);
+          reject(error + "catch del foreach");
         });
     });
+  });
+}
+
+function upDateTotal(total, idPedido) {
+  db.query("UPDATE pedidos SET precio_total = ? WHERE id = ? ", {
+    replacements: [total, idPedido],
+  })
+    .then((respuesta) => {
+      //console.log(respuesta[0])
+    })
+    .catch((error) => {
+      console.log(error + "catch del update");
+    })
+    .catch((error) => {
+      reject(error + " calcular total");
+    });
 };
 
-function upDateTotal (total, idPedido){
-    db.query('UPDATE pedidos SET precio_total = ? WHERE id = ? ',
-                { replacements: [total, idPedido]})
-                .then((respuesta)=> {
-                    //console.log(respuesta[0])
-                }).catch((error) => {
-                    console.log(error + 'catch del update')
-                }).catch((error) => {
-                reject(error + ' calcular total')
-            });
+const upDateEstado = (req, res) => {
+  let hora = moment().format("YYYY-MM-DD HH:mm:ss");
+  let estadoNuevo = req.body.idEstado;
+  let pedido = req.body.idPedido;
+  let usuario = req.usuario;
+
+  db.query('SELECT id_estado FROM pedidos WHERE id = ?',
+    {replacements: [pedido], type: db.QueryTypes.SELECT})
+    .then((respuesta) => {
+        if((respuesta[0].id_estado === estadoNuevo)){
+            res.status(401).send('Estado no se puede cambiar porque es el mismo')
+        } else {
+            db.query("UPDATE pedidos SET id_estado = ?, hora = ? WHERE id = ?", {
+                replacements: [estadoNuevo, hora, pedido],
+              })
+                .then((respuesta) => {
+                  res.json({
+                    estadoActual: estadoNuevo,
+                    respuesta: respuesta[0],
+                    dateTime: hora,
+                    usuario: usuario.id,
+                  });
+                })
+                .catch((error) => {
+                  res.json({ error: error });
+                });
+        }
+    }).catch((error) => {
+        res.status(500).send(error + ' catch del select estado from pedidos')
+    });
 };
 
-const upDateEstadoPedido = (req, res) => {
-    //si es admin patch estado
-    let estadoNuevo = req.body.idEstado
-    let pedido = req.body.idPedido
-};
 const getAllPedidos = (req, res) => {
-    //JOIN si es admin;
+    db.query(`SELECT e.estado, p.hora, p.id AS idPedido, dp.cantidad, pl.nombre, f.forma_pago,
+    p.precio_total, u.nombre_usuario, u.apellido_usuario, u.domicilio
+    FROM pedidos p
+    JOIN estados e ON p.id_estado = e.id
+    JOIN detalle_pedido dp ON dp.id_pedidos = p.id
+    JOIN platos pl ON dp.id_plato = pl.id
+    JOIN formas_de_pago f ON p.id_forma_pago = f.id
+    JOIN usuarios u ON p.id_usuarios = u.id
+    ORDER BY e.id ASC`).then((respuesta) => {
+        let pedidos = respuesta[0];
+        let listaPedidosById = pedidos.reduce(function (r, element) {
+        r[element.idPedido] = r[element.idPedido] || [];
+        r[element.idPedido].push(element);
+        return r;
+    }, Object.create(null));
+        res.json(listaPedidosById)
+    }).catch((error) => {
+        res.status(500).send(error)
+    });
 };
-const getUsuarioPedido = (req, res) => {
-    //JOIN pedido del usuario select pedidos where idPedido
+
+const getPedidoById = (req, res) => {
+  //JOIN pedido del usuario select pedidos where idPedido
+  //idPedido
+  //detalle (element: url_imagen, precio, nombre)
+  //total pedido
+  //pedido forma de pago
+  //direccion del usuario
+  let usuario = req.usuario.id
+  let newPedido = req.body;
+  let detalle = newPedido.detalle;
+
+
 };
 const deletePedidoUsuario = (req, res) => {
-    //patch cambiar estado pedido si idEstado < 3
-}
-const platosFavoritos = (req, res) => {
-    //
+  //patch cambiar estado pedido si idEstado < 3
+  let idPedido = req.body.idPedido;
+  let idEstado = req.idEstado
+  if(idEstado < 3){
+      db.query('UPDATE pedidos SET id_estado = ? WHERE id = ?',
+      {replacements: [idPedido]}).then((respuesta) => {
+          res.status(200).send('Pedido cancelado')
+      }).catch((error) => {
+          res.status(500).send({error: error})
+      })
+  }else{
+      res.status(401).send({message: 'Pedido no puede ser cancelado'})
+  }
 };
 
 
 module.exports = {
-    postPedido,
-    upDateEstadoPedido,
-    getAllPedidos,
-    getUsuarioPedido,
-    platosFavoritos,
-    deletePedidoUsuario
+  postPedido,
+  upDateEstado,
+  getAllPedidos,
+  getPedidoById,
+  deletePedidoUsuario,
+
 };

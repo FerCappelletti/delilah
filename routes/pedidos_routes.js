@@ -5,10 +5,10 @@ const middlewarePedido = require('../middlewares/pedidos_middleware')
 const api = express.Router();
 
 api.get('/', middlewareUsuario.tokenisAdmin, pedidoController.getAllPedidos);
-api.get('/', middlewareUsuario.tokenOk, pedidoController.getUsuarioPedido);
+//api.get('/', middlewareUsuario.tokenOk, pedidoController.getUsuarioPedido);
 api.post('/', middlewareUsuario.tokenOk, middlewarePedido.platosPedidos, pedidoController.postPedido);
-api.put('/', middlewareUsuario.tokenisAdmin, pedidoController.upDateEstadoPedido);
-//api.delete('/', middlewareUsuario.tokenisAdmin, pedidoController.);
-
+api.put('/', middlewareUsuario.tokenisAdmin, pedidoController.upDateEstado);
+api.delete('/', middlewareUsuario.tokenOk, pedidoController.deletePedidoUsuario);
+api.get('/', middlewareUsuario.tokenOk)
 
 module.exports = api;

@@ -6,6 +6,7 @@ const api = express.Router();
 
 api.get('/', middlewareUsuario.tokenisAdmin, platosController.getAllPlatos)
 api.get('/', middlewareUsuario.tokenOk, platosController.getPlatosDisponibles)
+api.get('/favoritos', middlewareUsuario.tokenOk, platosController.platosFavoritos)
 api.post('/',middlewareUsuario.tokenisAdmin, middlewarePlatos.datosPlato, platosController.createPlato);
 api.put('/', middlewarePlatos.platoFromDB, platosController.upDatePlato);
 api.delete('/', middlewareUsuario.tokenisAdmin, middlewarePlatos.platoFromDB , platosController.deletePlato);

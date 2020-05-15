@@ -77,10 +77,21 @@ const deletePlato = (req, res) => {
     });
 };
 
+const platosFavoritos = (req, res) => {
+  let usuario = req.usuario.id
+  console.log(usuario)
+  db.query('SELECT p.id AS idPedido, u.id AS usuario, dp.id_plato, dp.cantidad, pl.nombre FROM detalle_pedido dp JOIN pedidos p ON dp.id_pedidos = p.id JOIN  platos pl ON dp.id_plato = pl.id INNER JOIN usuarios u ON p.id_usuarios = u.id WHERE u.id = ? ORDER BY dp.cantidad DESC', {replacements: [usuario]}).then((respuesta) => {
+    let platos = respuesta[0];
+        res.json(platos)
+  }).catch((error) => {
+    res.status(404).send(error)
+  })
+};
 module.exports = {
   getAllPlatos,
   createPlato,
   upDatePlato,
   deletePlato,
-  getPlatosDisponibles
+  getPlatosDisponibles,
+  platosFavoritos
 };

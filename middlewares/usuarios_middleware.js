@@ -24,6 +24,7 @@ const tokenisAdmin = (req, res, next) => {
   const usuario = jwt.verify(token, firma);
 
   if (usuario.isAdmin.data[0] === 1) {
+      req.usuario = usuario;
       next();
   } else {
       res.status(401).send('Usuario no tiene permisos para acceder a ésta información');

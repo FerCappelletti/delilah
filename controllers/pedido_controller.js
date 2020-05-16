@@ -1,6 +1,46 @@
 const db = require("../config/database");
 const moment = require("moment");
 
+const getAllPedidos = (req, res) => {
+    db.query(`SELECT e.estado, p.hora, p.id AS idPedido, dp.cantidad, pl.nombre, f.forma_pago,
+    p.precio_total, u.nombre_usuario, u.apellido_usuario, u.domicilio
+    FROM pedidos p
+    JOIN estados e ON p.id_estado = e.id
+    JOIN detalle_pedido dp ON dp.id_pedidos = p.id
+    JOIN platos pl ON dp.id_plato = pl.id
+    JOIN formas_de_pago f ON p.id_forma_pago = f.id
+    JOIN usuarios u ON p.id_usuarios = u.id
+    ORDER BY e.id ASC`).then((respuesta) => {
+        let pedidos = respuesta[0];
+        let listaPedidosById = pedidos.reduce(function (acc, element) {
+        acc[element.idPedido] = acc[element.idPedido] || [];
+        acc[element.idPedido].push(element);
+        return acc;
+    }, {});
+        res.json(listaPedidosById)
+    }).catch((error) => {
+        res.status(500).send(error)
+    });
+};
+
+const getPedidoById = (req, res) => {
+  let idPedido = req.params.id ;
+  console.log(idPedido)
+  db.query(`SELECT pl.nombre AS plato, pl.precio, pl.url_imagen, u.nombre_usuario, u.email, u.domicilio, u.telefono, dp.cantidad AS cantidad, p.precio_total, p.id AS idPedido, fp.forma_pago, e.estado
+  FROM detalle_pedido dp
+  JOIN platos pl ON dp.id_plato = pl.id
+  JOIN pedidos p ON dp.id_pedidos = p.id
+  JOIN usuarios u ON p.id_usuarios = u.id
+  JOIN formas_de_pago fp ON p.id_forma_pago = fp.id
+  JOIN estados e ON p.id_estado = e.id
+  GROUP BY dp.id HAVING p.id = ?`, {replacements: [idPedido]})
+  .then((respuesta) => {
+    res.json(respuesta[0])
+  }).catch ((error) => {
+    res.json(error)
+  })
+};
+
 const postPedido = async (req, res) => {
   let usuario = req.usuario;
   let hora = moment().format("YYYY-MM-DD HH:mm:ss");
@@ -125,43 +165,9 @@ const upDateEstado = (req, res) => {
     });
 };
 
-const getAllPedidos = (req, res) => {
-    db.query(`SELECT e.estado, p.hora, p.id AS idPedido, dp.cantidad, pl.nombre, f.forma_pago,
-    p.precio_total, u.nombre_usuario, u.apellido_usuario, u.domicilio
-    FROM pedidos p
-    JOIN estados e ON p.id_estado = e.id
-    JOIN detalle_pedido dp ON dp.id_pedidos = p.id
-    JOIN platos pl ON dp.id_plato = pl.id
-    JOIN formas_de_pago f ON p.id_forma_pago = f.id
-    JOIN usuarios u ON p.id_usuarios = u.id
-    ORDER BY e.id ASC`).then((respuesta) => {
-        let pedidos = respuesta[0];
-        let listaPedidosById = pedidos.reduce(function (r, element) {
-        r[element.idPedido] = r[element.idPedido] || [];
-        r[element.idPedido].push(element);
-        return r;
-    }, Object.create(null));
-        res.json(listaPedidosById)
-    }).catch((error) => {
-        res.status(500).send(error)
-    });
-};
 
-const getPedidoById = (req, res) => {
-  //JOIN pedido del usuario select pedidos where idPedido
-  //idPedido
-  //detalle (element: url_imagen, precio, nombre)
-  //total pedido
-  //pedido forma de pago
-  //direccion del usuario
-  let usuario = req.usuario.id
-  let newPedido = req.body;
-  let detalle = newPedido.detalle;
-
-
-};
 const deletePedidoUsuario = (req, res) => {
-  //patch cambiar estado pedido si idEstado < 3
+  //put cambiar estado pedido si idEstado < 3
   let idPedido = req.body.idPedido;
   let idEstado = req.idEstado
   if(idEstado < 3){
@@ -178,9 +184,9 @@ const deletePedidoUsuario = (req, res) => {
 
 
 module.exports = {
+  getAllPedidos,
   postPedido,
   upDateEstado,
-  getAllPedidos,
   getPedidoById,
   deletePedidoUsuario,
 

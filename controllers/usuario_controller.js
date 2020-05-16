@@ -5,7 +5,7 @@ const moment = require("moment");
 const jwt = require("jsonwebtoken");
 const firma = require("../config/data.json").firma;
 
-const createUser = async (req, res) => {
+const postUser = async (req, res) => {
   let user = req.body;
   user.password = await bcrypt.hash(user.password, saltRounds);
   user.isAdmin = 0;
@@ -19,17 +19,7 @@ const createUser = async (req, res) => {
       res.status(201).send("Usuario registrado con éxito en la DB");
     })
     .catch((error) => {
-      res.status(500).send("sale por el catch del controlador" + error);
-    });
-};
-
-const getAllUsers = (req, res) => {
-  db.query("SELECT * FROM usuarios")
-    .then((usuarios) => {
-      res.status(200).json(usuarios[0]);
-    })
-    .catch((error) => {
-      res.status(401).send('Usuario no autorizado o token no válido para acceder a la información');
+      res.status(503).send(" error: " + error);
     });
 };
 
@@ -65,8 +55,19 @@ const logIn = (req, res) => {
     });
 };
 
+const getAllUsers = (req, res) => {
+  db.query("SELECT * FROM usuarios")
+    .then((usuarios) => {
+      res.status(200).json(usuarios[0]);
+    })
+    .catch((error) => {
+      res.status(500).send(error);
+    });
+};
+
+
 module.exports = {
-  createUser,
-  getAllUsers,
+  postUser,
   logIn,
+  getAllUsers,
 };

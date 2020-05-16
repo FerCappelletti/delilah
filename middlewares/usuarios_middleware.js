@@ -6,7 +6,7 @@ const userDataOk = async (req, res, next) => {
     if(user.nombre_usuario && user.apellido_usuario && user.email && user.usuario && user.password && user.telefono && user.domicilio) {
       next();
     }else {
-      res.status(401).send("Algunos de los datos no son correctos");
+      res.status(400).send("Bad request");
     }
 };
 //middleware para loguearse
@@ -19,7 +19,7 @@ const dataLogin = (req, res, next) => {
   };
 };
 
-const tokenisAdmin = (req, res, next) => {
+const tokenIsAdmin = (req, res, next) => {
   const token = req.headers.authorization.split(' ')[1];
   const usuario = jwt.verify(token, firma);
 
@@ -38,13 +38,13 @@ const tokenOk = (req,res, next) => {
       req.usuario = usuario;
       next();
   } else {
-      res.status(401).send('Usuario no registrado o el token expiró');
+      res.status(401).send('Usuario no registrado o JWT ha expirado');
   }
 };
 
 module.exports = {
   userDataOk,
-  tokenisAdmin,
+  tokenIsAdmin,
   dataLogin,
   tokenOk
 };

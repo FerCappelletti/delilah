@@ -3,8 +3,8 @@ const usuarioController = require('../controllers/usuario_controller')
 const middlewareUsuario = require('../middlewares/usuarios_middleware');
 const api = express.Router();
 
-api.post('/', middlewareUsuario.userDataOk, usuarioController.createUser);
+api.post('/', middlewareUsuario.userDataOk, usuarioController.postUser);
 api.post('/login',middlewareUsuario.dataLogin, usuarioController.logIn)
-api.get('/', middlewareUsuario.tokenisAdmin, usuarioController.getAllUsers);
+api.get('/', middlewareUsuario.tokenIsAdmin, usuarioController.getAllUsers);
 
 module.exports = api;

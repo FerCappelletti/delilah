@@ -14,12 +14,11 @@ const platoFromDB = (req,res,next) =>{
     db.query('SELECT * FROM platos WHERE id = :id',
     {replacements:plato, type: db.QueryTypes.SELECT})
     .then((respuesta)=>{
-        console.log(respuesta[0].id)
       if(respuesta[0].id > 0){
         next();
       };
     }).catch((error)=>{
-      res.status(404).send('middleware platoExiste' + error)
+      res.status(404).send(error)
     });
   };
 

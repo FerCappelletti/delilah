@@ -1,7 +1,6 @@
 # Delilah Api
 Api REST para realizar y administrar pedidos. Backend con Node JS / Express y base de datos relacional MySQL.
 
-<<<<<<< HEAD
 ## Recursos y tecnologías implementadas
 - Node js
 - Express
@@ -26,7 +25,7 @@ Api REST para realizar y administrar pedidos. Backend con Node JS / Express y ba
 ## Requisitos
 1 - Clonar el repositorio:
 
-    git clone
+    git clone https://github.com/FerCappelletti/delilah.git
     npm install
 
 2 - Una vez clonado el repositorio en tu local abrir el archivo `createDB.sql` que se encuentra en la carpeta `scripts`, copiar las queries y ejecutarlas en el motor de base de datos en MySQL.

@@ -6,7 +6,7 @@ const userDataOk = async (req, res, next) => {
     if(user.nombre_usuario && user.apellido_usuario && user.email && user.usuario && user.password && user.telefono && user.domicilio) {
       next();
     }else {
-      res.status(400).send("Bad request");
+      res.status(400).send("Alguno de los datos no son correctos");
     }
 };
 //middleware para loguearse
@@ -27,7 +27,7 @@ const tokenIsAdmin = (req, res, next) => {
       req.usuario = usuario;
       next();
   } else {
-      res.status(401).send('Usuario no tiene permisos para acceder a ésta información');
+      res.status(401).send('Usuario no tiene permisos para acceder a ésta información o JWT ha expirado');
   }
 }
 

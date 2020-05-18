@@ -4,7 +4,7 @@ const middlewareUsuario = require('../middlewares/usuarios_middleware');
 const middlewarePlatos = require('../middlewares/platos_middleware')
 const api = express.Router();
 
-api.get('/', middlewareUsuario.tokenIsAdmin, platosController.getAllPlatos)
+api.get('/stock', middlewareUsuario.tokenIsAdmin, platosController.getAllPlatos)
 api.get('/', middlewareUsuario.tokenOk, platosController.getPlatosDisponibles)
 api.get('/favoritos', middlewareUsuario.tokenOk, platosController.platosFavoritos)
 api.post('/',middlewareUsuario.tokenIsAdmin, middlewarePlatos.datosPlato, platosController.postPlato);

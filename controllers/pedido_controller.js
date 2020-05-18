@@ -66,7 +66,7 @@ const postPedido = async (req, res) => {
       res.status(201).json({idPedido: idPedido});
     })
     .catch((error) => {
-      res.status(500).send("catch insert pedidos" + error);
+      res.status(500).send( error);
     });
 };
 
@@ -161,28 +161,25 @@ const upDateEstado = (req, res) => {
                 });
         }
     }).catch((error) => {
-        res.status(500).send(error + ' catch del select estado from pedidos')
+        res.status(500).send(error)
     });
 };
 
 
 const deletePedidoUsuario = (req, res) => {
-  //put cambiar estado pedido si idEstado < 3
+  //delete cambiar estado pedido si idEstado < 3
   let idPedido = req.body.idPedido;
-  let idEstado = req.idEstado
-  if(idEstado < 3){
-      db.query('UPDATE pedidos SET id_estado = ? WHERE id = ?',
-      {replacements: [idPedido]}).then((respuesta) => {
-          res.status(200).send('Pedido cancelado')
-      }).catch((error) => {
-          res.status(500).send({error: error})
-      })
-  }else{
-      res.status(401).send({message: 'Pedido no puede ser cancelado'})
-  }
-};
 
+    db.query('DELETE FROM pedidos WHERE id = ?',
+    {
+      replacements: [idPedido]
+    }).then((respuesta) => {
+      res.status(200).send('Pedido ' + idPedido + ' eliminado')
+    }).catch((error) => {
+      res.status(500).send(error)
+    })
 
+}
 module.exports = {
   getAllPedidos,
   postPedido,

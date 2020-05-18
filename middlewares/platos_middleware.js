@@ -2,11 +2,19 @@ const db = require('../config/database.js');
 
 const datosPlato = async (req, res, next) => {
     let plato = req.body;
-    if(plato.nombre && plato.precio) {
-        next();
+
+    db.query('SELECT nombre FROM platos WHERE nombre = ?',
+    {replacements: [plato.nombre], type: db.QueryTypes.SELECT})
+    .then((respuesta)=> {
+      console.log(respuesta)
+      if(respuesta[0].nombre === plato.nombre) {
+        res.status(406).send("Plato con ese nombre ya existe en la DB");
       }else {
-        res.status(401).send("Algunos de los datos no son correctos");
+        next();
       }
+    }).catch((error) => {
+      res.status(500).send(error)
+    })
 };
 
 const platoFromDB = (req,res,next) =>{

@@ -12,14 +12,13 @@ const postUser = async (req, res) => {
 
   db.query(
     "INSERT INTO usuarios (nombre_usuario, apellido_usuario, email, usuario, password, telefono, domicilio, isAdmin) VALUES (:nombre_usuario, :apellido_usuario, :email, :usuario, :password, :telefono, :domicilio, :isAdmin) ",
-    { replacements: user, type: db.QueryTypes.SELECT }
+    { replacements: user}
   )
     .then((respuesta) => {
-      console.log(respuesta);
       res.status(201).send("Usuario registrado con éxito en la DB");
     })
     .catch((error) => {
-      res.status(503).send(" error: " + error);
+      res.status(500).send(error);
     });
 };
 

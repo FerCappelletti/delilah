@@ -1,6 +1,7 @@
 # Delilah Api
 Api REST para realizar y administrar pedidos. Backend con Node JS / Express y base de datos relacional MySQL.
 
+<<<<<<< HEAD
 ## Recursos y tecnologías implementadas
 - Node js
 - Express
@@ -53,6 +54,7 @@ Selecciona `delilahResto.postman_collection.json` desde Postman y comienza a div
 
 ## Api documentación con Swagger
 [Documentación de los endpoints](https://app.swaggerhub.com/apis-docs/FerCappelletti/delilahResto/1.0.0)
+=======
 #API documentation with Swagger
 https://app.swaggerhub.com/apis-docs/FerCappelletti/delilahResto/1.0.0/
 >>>>>>> b79d67278aa1f268ba9870ced42103f2399eeb4d

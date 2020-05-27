@@ -8,7 +8,7 @@ api.get('/', middlewareUsuario.tokenIsAdmin, pedidoController.getAllPedidos);
 api.get('/:id', middlewareUsuario.tokenIsAdmin, pedidoController.getPedidoById);
 api.post('/', middlewareUsuario.tokenOk, middlewarePedido.platosPedidos, pedidoController.postPedido);
 api.patch('/', middlewareUsuario.tokenIsAdmin, pedidoController.upDateEstado);
-api.delete('/', middlewareUsuario.tokenOk, pedidoController.deletePedidoUsuario);
+api.delete('/', middlewareUsuario.tokenIsAdmin, pedidoController.deletePedidoUsuario);
 
 
 module.exports = api;

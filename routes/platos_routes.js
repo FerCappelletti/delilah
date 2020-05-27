@@ -8,7 +8,7 @@ api.get('/stock', middlewareUsuario.tokenIsAdmin, platosController.getAllPlatos)
 api.get('/', middlewareUsuario.tokenOk, platosController.getPlatosDisponibles)
 api.get('/favoritos', middlewareUsuario.tokenOk, platosController.platosFavoritos)
 api.post('/',middlewareUsuario.tokenIsAdmin, middlewarePlatos.datosPlato, platosController.postPlato);
-api.patch('/', middlewarePlatos.platoFromDB, platosController.upDatePlato);
+api.patch('/',middlewareUsuario.tokenIsAdmin, middlewarePlatos.platoFromDB, platosController.upDatePlato);
 api.delete('/', middlewareUsuario.tokenIsAdmin, middlewarePlatos.platoFromDB , platosController.deletePlato);
 
 module.exports = api;

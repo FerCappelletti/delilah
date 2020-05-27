@@ -31,10 +31,12 @@ Api REST para realizar y administrar pedidos. Backend con Node JS / Express y ba
 
 2 - Una vez clonado el repositorio en tu local abrir el archivo `createDB.sql` que se encuentra en la carpeta `scripts`, copiar las queries y ejecutarlas en el motor de base de datos en MySQL.
 
-3 - Abrir el archivo `data.json` que se encuentra dentro de la carpeta `config` y completar con tus datos
-   ` {"user": "tu_usuario",
-     "password": "tu_password"
-    }
+3 - Abrir el archivo `db_connection_data` que se encuentra dentro de la carpeta `config` y completar con tus datos
+   `conf_db_host = 'localhost', // host
+    conf_db_name   = 'delilah', // database name
+    conf_user     = 'root',           // user name
+    conf_password = '',               // password
+    conf_port     = '3306';           // port number
 `
 Si quieres puedes cambiarle la firma para JWT aqui también
 
@@ -54,7 +56,7 @@ Selecciona `delilahResto.postman_collection.json` desde Postman y comienza a div
 
 ## Api documentación con Swagger
 [Documentación de los endpoints](https://app.swaggerhub.com/apis-docs/FerCappelletti/delilahResto/1.0.0)
-=======
+
 #API documentation with Swagger
 https://app.swaggerhub.com/apis-docs/FerCappelletti/delilahResto/1.0.0/
->>>>>>> b79d67278aa1f268ba9870ced42103f2399eeb4d
+
